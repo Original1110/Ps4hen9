@@ -41,7 +41,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
       align-items: center;
       overflow: hidden;
     }
-
     @font-face {
       font-family: 'logging';
       src: url('fonts/LiberationMono-Regular.ttf');
@@ -58,34 +57,37 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
       box-shadow: 8px 10px 2px rgba(0, 0, 0, 0.178);
     }
 
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
 
-	  #console {
-                font-family: 'logging';
-            }
+    #console {
+      font-family: 'logging', monospace;
+      font-size: 18px;
+      text-align: left;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      height: 300px;
+      overflow-y: auto;
+    }
   </style>
-	  <script>
+</head>
+<body>
+  <script>
     if (window.applicationCache.status === 0) {
       window.location.replace("cache.html");
     }
   </script>
-</head>
-<body>
-  
-  
-    <pre id='console'></pre>
-  	
-  <div>
-  <h1><center><font style='color:#FFD700;font-size:80px;font-weight:bold;margin:0 0 0 0.0;text-shadow:3px 2px #ff0000;'><i>PS4 Auto Jailbreak By Original</i></font></center></h1>
-    <br><br><br><br><br><br><br><br><br><br><br><br>
-  </div>
-  <div style="background-color:#032140;color:white;position:fixed;left:0;bottom:-0px;width:100%;text-align:center;">
-	<font style='color:#87FF33'>Modder & Dev : </font><a href="" style='font-size:20px;text-align:center;color:yellow;'>Ahmed Abdelsalam & Hamada Ali</a>
-	<br>
-	<font style='color:#87FF33'>Phone : </font>*   01017096872  &  01115550903*<br>
 
+  <div class="card">
+    <h1>NabeelOffice - PS4 9.00 GoldHEN</h1>
+    <pre id="console"></pre>
   </div>
 
-	<script src="payload.js"></script>
+  <script src="payload.js"></script>
   <script type="module" src="./alert.mjs"></script>
 </body>
 </html>
