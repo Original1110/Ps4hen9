@@ -1,93 +1,134 @@
-<!--
-Copyright (C) 2023-2025 anonymous
-
-This file is part of PSFree.
-
-PSFree is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-PSFree is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title> Original - PS4 9.00 GoldHEN </title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<meta charset="UTF-8">
+<title>GoldHEN Loader</title>
 
-    body {
-      background-image: url('icon0.jpg');
-	   background-repeat: no-repeat;
-	   background-size: 100% 95%;
-      color: white;
-      font-family: Arial, sans-serif;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-    }
-    @font-face {
-      font-family: 'logging';
-      src: url('fonts/LiberationMono-Regular.ttf');
-    }
+<style>
+body{
+    margin:0;
+    height:100vh;
+    background:#000;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    font-family:Arial;
+    color:white;
+}
 
-    .card {
-      background: rgba(0, 0, 0, 0);
-      backdrop-filter: blur(0px);
-      padding: 0;
-      border-radius: 0px;
-      text-align: hidden;
-      width: 0%;
-      max-width: 0;
-      box-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
-    }
+h1{
+    color:#FFD700;
+    margin-bottom:20px;
+}
 
-    h1 {
-      font-size: 32px;
-      margin-bottom: 20px;
-    }
+#progressContainer{
+    width:70%;
+    height:35px;
+    border:2px solid #FFD700;
+    border-radius:20px;
+    overflow:hidden;
+    background:rgba(255,255,255,0.1);
+}
 
-    #console {
-      font-family: 'logging';
-		font-size: 0px;
-    }
-  </style>
+#progressBar{
+    width:0%;
+    height:100%;
+    background:linear-gradient(90deg,#FFD700,#87FF33);
+    transition:width 0.2s linear;
+}
+
+#progressText{
+    margin-top:15px;
+    font-size:28px;
+    color:#FFD700;
+    text-shadow:2px 2px #000;
+}
+
+#status{
+    margin-top:10px;
+    font-size:20px;
+    color:white;
+}
+</style>
 </head>
+
 <body>
-  <script>
-    if (window.applicationCache.status === 0) {
-      window.location.replace("cache.html");
+
+<h1>GoldHEN Loader</h1>
+
+<div id="progressContainer">
+    <div id="progressBar"></div>
+</div>
+
+<div id="progressText">0%</div>
+<div id="status">Starting...</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const bar = document.getElementById("progressBar");
+    const text = document.getElementById("progressText");
+    const status = document.getElementById("status");
+
+    let progress = 0;
+    let fakeLoader;
+
+    // 🔵 Progress وهمي 0 → 70
+    function startFake(){
+        fakeLoader = setInterval(() => {
+
+            if(progress < 70){
+                progress++;
+                bar.style.width = progress + "%";
+                text.innerHTML = progress + "%";
+            }
+
+        }, 60);
     }
-  </script>
-  <br><h1><center><font style='color:#FFD700;font-size:80px;font-weight:bold;margin:0 0 0 0.0;text-shadow:3px 2px #000000;'><i>Original #1</i></font></center></h1>
-    
-  
-  <div class="card">
-    <pre id="console"></pre>
-  </div>
 
-  <div style="background-color:#032140;color:white;position:fixed;left:0;bottom:-0px;width:100%;text-align:center;">
-	<font style='color:#87FF33'>Modder & Dev : </font><a href="" style='font-size:20px;text-align:center;color:yellow;'>Ahmed Abdelsalam & Hamada Ali</a>
-	<br>
-	<font style='color:#87FF33'>Phone : </font>*   01017096872  &  01115550903*<br>
+    startFake();
 
-	</div>
-  <script src="payload.js"></script>
-  <script type="module" src="./alert.mjs"></script>
+    // 🔵 تحميل payload.bin
+    fetch('./payload.bin')
+    .then(res => res.arrayBuffer())
+    .then(data => {
+
+        clearInterval(fakeLoader);
+
+        window.pld = new Uint32Array(data);
+
+        status.innerHTML = "Injecting...";
+
+        // 🔵 إكمال إلى 100
+        let finish = setInterval(() => {
+
+            if(progress < 100){
+                progress += 2;
+
+                if(progress > 100)
+                    progress = 100;
+
+                bar.style.width = progress + "%";
+                text.innerHTML = progress + "%";
+            }
+
+            if(progress === 100){
+                clearInterval(finish);
+                status.innerHTML = "GoldHEN Loaded Successfully ✓";
+                text.style.color = "#87FF33";
+            }
+
+        }, 25);
+
+    })
+    .catch(err => {
+        status.innerHTML = "Error loading payload!";
+        console.log(err);
+    });
+
+});
+</script>
+
 </body>
 </html>
