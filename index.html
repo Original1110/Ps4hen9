@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>GoldHEN Loader</title>
+<title>Loader</title>
 
 <style>
 body{
@@ -65,67 +65,75 @@ h1{
 <div id="status">Starting...</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function(){
+const bar = document.getElementById("progressBar");
+const text = document.getElementById("progressText");
+const status = document.getElementById("status");
 
-    const bar = document.getElementById("progressBar");
-    const text = document.getElementById("progressText");
-    const status = document.getElementById("status");
+let progress = 0;
+let fakeLoader;
 
-    let progress = 0;
-    let fakeLoader;
+// 🔵 تحميل وهمي 0 → 70
+function startFake(){
+    fakeLoader = setInterval(() => {
 
-    // 🔵 Progress وهمي 0 → 70
-    function startFake(){
-        fakeLoader = setInterval(() => {
+        if(progress < 70){
+            progress++;
+            bar.style.width = progress + "%";
+            text.innerHTML = progress + "%";
+        }
 
-            if(progress < 70){
-                progress++;
-                bar.style.width = progress + "%";
-                text.innerHTML = progress + "%";
-            }
+    }, 60);
+}
 
-        }, 60);
+startFake();
+
+// 🔵 تحميل payload.bin الحقيقي
+fetch('./payload.bin')
+.then(res => {
+
+    if(!res.ok){
+        throw new Error("payload.bin not found");
     }
 
-    startFake();
+    return res.arrayBuffer();
 
-    // 🔵 تحميل payload.bin
-    fetch('./payload.bin')
-    .then(res => res.arrayBuffer())
-    .then(data => {
+})
+.then(data => {
 
-        clearInterval(fakeLoader);
+    clearInterval(fakeLoader);
 
-        window.pld = new Uint32Array(data);
+    window.pld = new Uint32Array(data);
 
-        status.innerHTML = "Injecting...";
+    status.innerHTML = "Injecting...";
 
-        // 🔵 إكمال إلى 100
-        let finish = setInterval(() => {
+    // 🔵 إكمال إلى 100
+    let finish = setInterval(() => {
 
-            if(progress < 100){
-                progress += 2;
+        if(progress < 100){
+            progress += 2;
+            if(progress > 100) progress = 100;
 
-                if(progress > 100)
-                    progress = 100;
+            bar.style.width = progress + "%";
+            text.innerHTML = progress + "%";
+        }
 
-                bar.style.width = progress + "%";
-                text.innerHTML = progress + "%";
-            }
+        if(progress === 100){
+            clearInterval(finish);
+            status.innerHTML = "GoldHEN Loaded Successfully ✓";
+            text.style.color = "#87FF33";
+        }
 
-            if(progress === 100){
-                clearInterval(finish);
-                status.innerHTML = "GoldHEN Loaded Successfully ✓";
-                text.style.color = "#87FF33";
-            }
+    }, 30);
 
-        }, 25);
+})
+.catch(err => {
 
-    })
-    .catch(err => {
-        status.innerHTML = "Error loading payload!";
-        console.log(err);
-    });
+    clearInterval(fakeLoader);
+
+    status.innerHTML = "ERROR: " + err.message;
+    text.style.color = "red";
+
+    console.log(err);
 
 });
 </script>
